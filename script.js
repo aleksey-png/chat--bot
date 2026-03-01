@@ -1,54 +1,74 @@
-         const messagesContainer = document.getElementById('messages');
-        const userInput = document.getElementById('userInput');
-        const sendButton = document.getElementById('sendButton');
 
-        function addMessage(text, isUser) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
-            messageDiv.textContent = text;
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+const messagesContainer = document.getElementById('messages');
+const userInput = document.getElementById('userInput');
+const sendButton = document.getElementById('sendButton');
+
+function addMessage(text, isUser) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+    messageDiv.textContent = text;
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+sendButton.addEventListener('click', sendMessage);
+
+userInput.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+async function sendMessage() {
+    const userText = userInput.value.trim();
+    if (userText === '') return;
+
+    addMessage(userText, true);
+    userInput.value = '';
+
+    // Ждём ответа бота и только потом добавляем сообщение
+    const botResponse = await getBotResponse(userText);
+    addMessage(botResponse, false);
+}
+
+// Выносим fetchWeather отдельно — так чище и понятнее
+async function fetchWeather() {
+    const CITY = 'Novosibirsk';
+    try {
+        const response = await fetch(
+            `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${CITY}%2C%20NVS%2C%20RU?unitGroup=metric&key=ZRKQMJKCYSCB47XBQ4Q6J6H8L&contentType=json`
+        );
+
+        if (!response.ok) {
+            throw new Error('Ошибка сети или неверный город');
         }
 
-        sendButton.addEventListener('click', sendMessage);
+        const data = await response.json();
+        return `Температура в Новосибирске: ${data.days[0].temp}°C`;
+    } catch (error) {
+        console.error('Ошибка получения погоды:', error);
+        return 'Не удалось получить данные о погоде';
+    }
+}
 
-        userInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
 
-        function sendMessage() {
-            const userText = userInput.value.trim();
-            if (userText === '') return;
+async function getBotResponse(userMessage) {
+    const lowerMessage = userMessage.toLowerCase();
 
-            addMessage(userText, true);
-            userInput.value = '';
 
-            setTimeout(() => {
-                const botResponse = getBotResponse(userText);
-                addMessage(botResponse, false);
-            }, 500);
-        }
-
-        
-        function getBotResponse(userMessage) {
-            const lowerMessage = userMessage.toLowerCase();
-
-            
- if (lowerMessage.includes('привет') || lowerMessage.includes('здравствуй')) {
-                const responses = [
-                    'Здравствуйте! Очень рад вас видеть!',
+    if (lowerMessage.includes('привет') || lowerMessage.includes('здравствуй')) {
+        const responses = [
+            'Здравствуйте! Очень рад вас видеть!',
             'Привет-привет! Чем могу помочь?',
             'О, привет! Как ваши дела?',
             'Добрый день! Чем займёмся?',
             'Приветствую! Что хотите обсудить?',
             'Рад приветствовать вас в нашем чате!',
             'Здравствуйте! Чем я могу быть полезен?'
-                ];
-                return responses[Math.floor(Math.random() * responses.length)];
-            } else if (lowerMessage.includes('пока') || lowerMessage.includes('до свидания')) {
-                const responses = [
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    } else if (lowerMessage.includes('пока') || lowerMessage.includes('до свидания')) {
+        const responses = [
             'До свидания! Возвращайтесь скорее!',
             'Пока-пока! Хорошего дня!',
             'Прощайте! Было приятно пообщаться!',
@@ -56,10 +76,10 @@
             'Увидимся позже! Удачи вам!',
             'До скорого! Берегите себя!',
             'Прощайте! Надеюсь, скоро увидимся снова!'
-                ];
-                return responses[Math.floor(Math.random() * responses.length)];
-            } else if (lowerMessage.includes('как дела')) {
-                const responses = [
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    } else if (lowerMessage.includes('как дела')) {
+        const responses = [
             'У меня всё отлично, спасибо! Заряжен энергией!',
             'Прекрасно! Готов помочь вам!',
             'Всё замечательно, спасибо, что спросили!',
@@ -67,10 +87,10 @@
             'Лучше всех! А вы как?',
             'Замечательно! Чем могу быть полезен?',
             'Великолепно! Спасибо, что интересуетесь!'
-                ];
-                return responses[Math.floor(Math.random() * responses.length)];
-            } else if (lowerMessage.includes('спасибо') || lowerMessage.includes('благодарю')) {
-                const responses = [
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    } else if (lowerMessage.includes('спасибо') || lowerMessage.includes('благодарю')) {
+        const responses = [
             'Всегда пожалуйста! Обращайтесь ещё!',
             'Рад был помочь!',
             'Не за что! Это моя работа!',
@@ -78,10 +98,10 @@
             'Без проблем! Чем ещё могу помочь?',
             'На здоровье! Обращайтесь!',
             'Спасибо вам за добрые слова!'
-                ];
-                return responses[Math.floor(Math.random() * responses.length)];
-            } else if (lowerMessage.includes('помощь')) {
-                const responses = [
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    } else if (lowerMessage.includes('помощь')) {
+        const responses = [
             'Я могу ответить на простые вопросы. Спросите что‑нибудь!',
             'Чем могу помочь? Задавайте вопрос!',
             'Готов помочь! Что вас интересует?',
@@ -89,52 +109,52 @@
             'Я здесь, чтобы помочь! Спрашивайте!',
             'Помощь уже в пути! Какой у вас вопрос?',
             'С удовольствием помогу! Что нужно сделать?'
-                ];
-                return responses[Math.floor(Math.random() * responses.length)];
-            } else if (lowerMessage.includes('мне грустно')  || lowerMessage.includes('у меня нет настроения')){
-               return 'Не расстраивайся, если хочешь мы можем поговорить.';     
-            } else if (lowerMessage.includes('мне хорошо')  || lowerMessage.includes('у меня хорошее настроение') || lowerMessage.includes('у меня сегодня хорошее настроение')){
-                const responses = [
-                    'Это отлично, раскажите почему?',
-                    'Это отлично, раскажите почему? Если это конечно не секрет.',
-                    'Рад это слышать.',
-                    'Это хорошо что планируете делать?',
-                    'Это прекрасно'
-                ];
-                return responses[Math.floor(Math.random() * responses.length)];
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    } else if (lowerMessage.includes('мне грустно') || lowerMessage.includes('у меня нет настроения')) {
+        return 'Не расстраивайся, если хочешь мы можем поговорить.';
+    } else if (lowerMessage.includes('мне хорошо') || lowerMessage.includes('у меня хорошее настроение') || lowerMessage.includes('у меня сегодня хорошее настроение')) {
+        const responses = [
+            'Это отлично, раскажите почему?',
+            'Это отлично, раскажите почему? Если это конечно не секрет.',
+            'Рад это слышать.',
+            'Это хорошо что планируете делать?',
+            'Это прекрасно'
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
 
-            } else if (lowerMessage.includes('я пожал рекорд') || lowerMessage.includes('я присел рекорд') || lowerMessage.includes('я потянул рекорд')){
-                              const responses = [
-                    'Я рад за вас.',
-                    'Если-бы я не был чат-ботом, а был бы человеком я бы сделал больше вас.',
-                    'Рад это слышать.',
-                    'Поздравляю!!'
-                ];
-                return responses[Math.floor(Math.random() * responses.length)];    
-            } else if (lowerMessage.includes('я поеду в зал')  || lowerMessage.includes('я поеду в спортзал')) {
-                return 'Я бы тоже хотел..';   
-            } else if (lowerMessage.includes('кто ты')) {
-                return 'Я чат‑бот, созданный, чтобы помогать вам!';
-            } else if (lowerMessage.includes('что умеешь')) {
-                return 'Я умею общаться, отвечать на вопросы и поднимать настроение!';
-            } else if (lowerMessage.includes('шутка') || lowerMessage.includes('пошути')) {
-                const jokes = [
+    } else if (lowerMessage.includes('я пожал рекорд') || lowerMessage.includes('я присел рекорд') || lowerMessage.includes('я потянул рекорд')) {
+        const responses = [
+            'Я рад за вас.',
+            'Если-бы я не был чат-ботом, а был бы человеком я бы сделал больше вас.',
+            'Рад это слышать.',
+            'Поздравляю!!'
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    } else if (lowerMessage.includes('я поеду в зал') || lowerMessage.includes('я поеду в спортзал')) {
+        return 'Я бы тоже хотел..';
+    } else if (lowerMessage.includes('кто ты')) {
+        return 'Я чат‑бот, созданный, чтобы помогать вам!';
+    } else if (lowerMessage.includes('что умеешь')) {
+        return 'Я умею общаться, отвечать на вопросы и поднимать настроение!';
+    } else if (lowerMessage.includes('шутка') || lowerMessage.includes('пошути')) {
+        const jokes = [
             'Почему программисты не ходят в лес? Боятся встретить баги!',
             'Что сказал нуль восьмёрке? — Красивый пояс!',
             'Как называется программист, который не любит кофе? — Спящий режим.',
             'Почему роботы никогда не устают? Потому что у них есть режим энергосбережения!',
             'Что говорит компьютер, когда ему холодно? — У меня вирус!'
-                ];
-                return jokes[Math.floor(Math.random() * jokes.length)];
-            } else if (lowerMessage.includes('настроение')) {
-                return 'Моё настроение прекрасное! А ваше?';
-            } else if (lowerMessage.includes('кот') || lowerMessage.includes('котик')) {
-                return 'Котики — это хорошо! Они приносят удачу!';
-            } else if (lowerMessage.includes('да')) {
-                return 'Отлично, я понял!';
-            } else if (lowerMessage.includes('нет')) {
-                return 'Хорошо, давайте обсудим что‑то другое.';
-            }else if (lowerMessage.includes('фильм') || lowerMessage.includes('кино')) {
+        ];
+        return jokes[Math.floor(Math.random() * jokes.length)];
+    } else if (lowerMessage.includes('настроение')) {
+        return 'Моё настроение прекрасное! А ваше?';
+    } else if (lowerMessage.includes('кот') || lowerMessage.includes('котик')) {
+        return 'Котики — это хорошо! Они приносят удачу!';
+    } else if (lowerMessage.includes('да')) {
+        return 'Отлично, я понял!';
+    } else if (lowerMessage.includes('нет')) {
+        return 'Хорошо, давайте обсудим что‑то другое.';
+    } else if (lowerMessage.includes('фильм') || lowerMessage.includes('кино')) {
         const responses = [
             'Рекомендую посмотреть «Интерстеллар» — потрясающий фильм!',
             'Как насчёт классики — «Крёстный отец»?',
@@ -381,26 +401,22 @@
             'Силовые тренировки ускоряют метаболизм.',
             'Профессиональный спортсмен тренируется 6–8 часов в день.'
         ];
-        return responses[Math.floor(Math.random() * responses.length)];
-    } else if (lowerMessage.includes('кино') || lowerMessage.includes('фильм') || lowerMessage.includes('актёр')) {
+        return responses[Math.f(loorMath.random() * responses.length)];
+    } else if (lowerMessage.includes('фильм') || lowerMessage.includes('кино') || lowerMessage.includes('актёр')) {
+      const responses = 12;
+        return responses
+    } else if (lowerMessage.includes('температура') || lowerMessage.includes('температура в нск') || lowerMessage.includes('какая сейчас температура?')) {
+       return await fetchWeather();
+    
+    } else {
+    
         const responses = [
-            'Первый фильм длился 49 секунд.',
-            'Спецэффекты CGI появились в 1970‑х.',
-            'Оскар вручают с 1929 года.',
-            'Марвеловские фильмы собрали более 28 миллиардов долларов.',
-            'На съёмках «Титаника» использовали настоящие исторические предметы.'
+            'Интересно! Расскажите подробнее.',
+            'Понял вас. Что ещё?',
+            'Хм, интересный вопрос. Дайте подумать...',
+            'Не совсем понял. Можете уточнить?',
+            'Это любопытно! А что ещё вы хотели бы узнать?'
         ];
         return responses[Math.floor(Math.random() * responses.length)];
     }
-                   
-            else {
-                const responses = [
-                    'Интересно! Расскажите подробнее.',
-                    'Понял вас. Что ещё?',
-                    'Хм, интересный вопрос. Дайте подумать...',
-                    'Не совсем понял. Можете уточнить?',
-                    'Это любопытно! А что ещё вы хотели бы узнать?'
-                ];
-                return responses[Math.floor(Math.random() * responses.length)];
-            }
-        }
+}
