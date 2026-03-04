@@ -459,11 +459,11 @@ async function getBotResponse(userMessage) {
     
     }
     else if (lowerMessage.includes('запусти крестики нолики') || lowerMessage.includes('крестики нолики')) {
-       return window.location.href = 'game.html';
+       return window.location.href = './game.html';
        
     }
     else if (lowerMessage.includes('игра с ботом') || lowerMessage.includes('давай сыграем в игру')) {
-       return window.location.href = 'game-bot.html';
+       return window.location.href = './game-bot.html';
        
     }else {
 
