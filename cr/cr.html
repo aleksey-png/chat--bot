@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Цветная стратегия</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2f);
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #gameCanvas {
+      border: 3px solid #3a3a5a;
+      border-radius: 10px;
+      background: #2d3748;
+      margin: 20px 0;
+    }
+    .controls {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .card {
+      width: 80px;
+      height: 120px;
+      border: 2px solid white;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .red-card { background: rgba(233, 69, 96, 0.7); }
+    .blue-card { background: rgba(67, 151, 255, 0.7); }
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="stats">
+      <div>Красные: <span id="red-health">100</span> HP</div>
+      <div>Синие: <span id="blue-health">100</span> HP</div>
+      <div>Эликсир: <span id="elixir">0</span>/10</div>
+    </div>
+
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+    <div class="controls">
+      <div class="card red-card" data-type="red" data-cost="3">
+        <div>Красный</div>
+        <div>Урон: 10</div>
+        <div>Стоимость: 3</div>
+      </div>
+      <div class="card blue-card" data-type="blue" data-cost="4">
+        <div>Синий</div>
+        <div>Урон: 15</div>
+        <div>Стоимость: 4</div>
+      </div>
+      <div class="card red-card" data-type="tank" data-cost="6">
+        <div>Танк</div>
+        <div>Урон: 5</div>
+        <div>HP: 50</div>
+        <div>Стоимость: 6</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="cr.js"></script>
+</body>
+</html>

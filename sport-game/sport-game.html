@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Подъём гантелей</title>
+  <link rel="stylesheet" href="sport-game.css">
+</head>
+<body>
+  <div class="game-container">
+    <h1>Подъём гантелей</h1>
+    
+    <div class="stats">
+      <div>Очки: <span id="score">0</span></div>
+      <div>Время: <span id="timer">60</span> сек</div>
+      <div>Подъёмов: <span id="lifts">0</span></div>
+    </div>
+
+    <div id="gameArea">
+      <!-- Гантели будут создаваться через JS -->
+    </div>
+
+    <button id="startButton">Начать тренировку</button>
+    <div id="gameOver" style="display: none;">
+      <h2>Тренировка завершена!</h2>
+      <p>Итоговый счёт: <span id="finalScore">0</span></p>
+      <button id="restartButton">Новая тренировка</button>
+    </div>
+  </div>
+
+  <script src="sport-game.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Paint</title>
+  <link rel="stylesheet" href="paint.css">
+</head>
+<body>
+  <div class="paint-app">
+    <h1>Mini Paint</h1>
+    
+    <div class="toolbar">
+      <button id="pencil" class="tool active">Карандаш</button>
+      <button id="eraser" class="tool">Ластик</button>
+      <button id="fill" class="tool">Заливка</button>
+      <input type="color" id="colorPicker" value="#000000">
+      <label for="brushSize">Размер: </label>
+      <input type="range" id="brushSize" min="1" max="20" value="5">
+      <span id="sizeValue">5px</span>
+      <button id="clear">Очистить</button>
+    </div>
+
+    <canvas id="canvas" width="800" height="500"></canvas>
+
+    <div class="status">
+      <p>Координаты: <span id="coords">0, 0</span></p>
+    </div>
+  </div>
+
+  <script src="paint.js"></script>
+</body>
+</html>

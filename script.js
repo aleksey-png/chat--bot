@@ -1,4 +1,3 @@
-
 const messagesContainer = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
 const sendButton = document.getElementById('sendButton');
@@ -29,7 +28,6 @@ async function sendMessage() {
     addMessage(userText, true);
     userInput.value = '';
 
-    // Ждём ответа бота и только потом добавляем сообщение
     const botResponse = await getBotResponse(userText);
     addMessage(botResponse, false);
 }
@@ -54,51 +52,68 @@ async function fetchWeather() {
 }
 
 async function doFetch() {
-  let url = "https://ru.wikipedia.org/w/rest.php/v1/search/page";
-  let headers = {'Api-User-Agent': 'MediaWiki REST API docs examples/0.1 (https://www.mediawiki.org/wiki/API_talk:REST_API)'}
-  let params = {
-    'q': tempUserText,
-    'limit': '10'
-  };
-  let query = Object.keys(params)
-             .map(k => k + '=' + encodeURIComponent(params[k]))
-             .join('&');
-  url = url + '?' + query;
+    let url = "https://ru.wikipedia.org/w/rest.php/v1/search/page";
+    let headers = { 'Api-User-Agent': 'MediaWiki REST API docs examples/0.1 (https://www.mediawiki.org/wiki/API_talk:REST_API)' }
+    let params = {
+        'q': tempUserText,
+        'limit': '10'
+    };
+    let query = Object.keys(params)
+        .map(k => k + '=' + encodeURIComponent(params[k]))
+        .join('&');
+    url = url + '?' + query;
 
-  const rsp = await fetch(url, headers);
-  const data = await rsp.json();
-  return data;
+    const rsp = await fetch(url, headers);
+    const data = await rsp.json();
+    return data;
 }
 
-async function fetchAsync()
-{
-            const responses = [
-            'Интересно! Расскажите подробнее.',
-            'Понял вас. Что ещё?',
-            'Хм, интересный вопрос. Дайте подумать...',
-            'Не совсем понял. Можете уточнить?',
-            'Это любопытно! А что ещё вы хотели бы узнать?'
-        ];
+async function fetchAsync() {
+    const responses = [
+        'Интересно! Расскажите подробнее.',
+        'Понял вас. Что ещё?',
+        'Хм, интересный вопрос. Дайте подумать...',
+        'Не совсем понял. Можете уточнить?',
+        'Это любопытно! А что ещё вы хотели бы узнать?'
+    ];
 
-  try {
-    let result = await doFetch();
+    try {
+        let result = await doFetch();
 
-    const indexArrSearch = Math.floor(Math.random() * result.pages.length);
+        const indexArrSearch = Math.floor(Math.random() * result.pages.length);
 
-    if (result?.pages[indexArrSearch]?.excerpt) {
-  return `${result?.pages[indexArrSearch]?.excerpt}...`;
-    } else {
-         return responses[Math.floor(Math.random() * responses.length)];
-    }
+        if (result?.pages[indexArrSearch]?.excerpt) {
+            return `${result?.pages[indexArrSearch]?.excerpt}...`;
+        } else {
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
 
-  
-  } catch( err ) {
+
+    } catch (err) {
 
         return responses[Math.floor(Math.random() * responses.length)];
-  }
+    }
 }
 
+function calculate(expr) {
+  const cleanExpr = expr.replace(/\s/g, '');
 
+  if (/\/0/.test(cleanExpr)) {
+    throw new Error('Деление на ноль!');
+  }
+
+  if (!/^[\d+\-*/().]+$/.test(cleanExpr)) {
+    throw new Error('Недопустимые символы в выражении');
+  }
+
+  const result = eval(cleanExpr);
+
+  if (!isFinite(result)) {
+    throw new Error('Результат не определён');
+  }
+
+  return result;
+}
 
 
 async function getBotResponse(userMessage) {
@@ -452,24 +467,58 @@ async function getBotResponse(userMessage) {
         ];
         return responses[Math.f(loorMath.random() * responses.length)];
     } else if (lowerMessage.includes('фильм') || lowerMessage.includes('кино') || lowerMessage.includes('актёр')) {
-      const responses = 12;
+        const responses = 12;
         return responses
     } else if (lowerMessage.includes('температура') || lowerMessage.includes('температура в нск') || lowerMessage.includes('какая сейчас температура?')) {
-       return await fetchWeather();
-    
+        return await fetchWeather();
+
     }
     else if (lowerMessage.includes('запусти крестики нолики') || lowerMessage.includes('крестики нолики')) {
-       return window.location.href = './game.html';
-       
+        return window.location.href = './game/game.html';
+
     }
     else if (lowerMessage.includes('игра с ботом') || lowerMessage.includes('давай сыграем в игру')) {
-       return window.location.href = './game-bot.html';
-       
-    }else {
+        return window.location.href = './game/game-bot.html';
 
-   console.log('input ', userInput);
-    console.log('tempUserText ', tempUserText);
-    return await fetchAsync();
+    }
+
+    else if (lowerMessage.includes('копия clash royal') || lowerMessage.includes('кр') || lowerMessage.includes('копия кр') || lowerMessage.includes('clash royal') || lowerMessage.includes('копия clash royal')) {
+        return window.location.href = './cr/cr.html';
+
+    }
+    else if (lowerMessage.includes('спорт игра') || lowerMessage.includes('игра про спорт') || lowerMessage.includes('поднимание гантелей') || lowerMessage.includes('игра поднимание гантелей') || lowerMessage.includes('игра по подниманию гантелей')) {
+        return window.location.href = './sport-game/sport-game.html';
+
+    } 
+
+        else if (lowerMessage.includes('paint') || lowerMessage.includes('хочу порисовать') || lowerMessage.includes('paint') || lowerMessage.includes('паинт') || lowerMessage.includes('рисовалка')) {
+        return window.location.href = './paint/paint.html';
+
+    } 
+    
+  else if (lowerMessage.startsWith('калькулятор ') ||
+           lowerMessage.startsWith('calc ') ||
+           lowerMessage.startsWith('/calc ') ||
+           lowerMessage.startsWith('/калькулятор ')) {
+
+    const expression = lowerMessage
+      .replace(/^калькулятор\s*/, '')
+      .replace(/^calc\s*/, '')
+      .replace(/^\/calc\s*/, '')
+      .replace(/^\/калькулятор\s*/, '')
+      .trim();
+
+    try {
+      const result = calculate(expression);
+      return `Результат: ${result}`;
+    } catch (error) {
+      return `Ошибка калькулятора: ${error.message}`;
+    }
+  }else {
+
+        console.log('input ', userInput);
+        console.log('tempUserText ', tempUserText);
+        return await fetchAsync();
 
     }
 }
