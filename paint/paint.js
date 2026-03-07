@@ -1,3 +1,4 @@
+
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const tools = document.querySelectorAll('.tool');
@@ -17,6 +18,21 @@ function initCanvas() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
+function getCoords(e) {
+  const rect = canvas.getBoundingClientRect();
+  if (e.type.includes('touch')) {
+    return {
+      x: e.touches[0].clientX - rect.left,
+      y: e.touches[0].clientY - rect.top
+    };
+  } else {
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+}
+
 tools.forEach(tool => {
   tool.addEventListener('click', () => {
     tools.forEach(t => t.classList.remove('active'));
@@ -31,33 +47,20 @@ brushSize.addEventListener('input', () => {
 
 canvas.addEventListener('mousedown', (e) => {
   if (currentTool === 'fill') return;
-
   isDrawing = true;
-  const rect = canvas.getBoundingClientRect();
-  lastX = e.clientX - rect.left;
-  lastY = e.clientY - rect.top;
-});
-
-canvas.addEventListener('mouseup', () => {
-  isDrawing = false;
-});
-
-canvas.addEventListener('mouseout', () => {
-  isDrawing = false;
+  const { x, y } = getCoords(e);
+  lastX = x;
+  lastY = y;
 });
 
 canvas.addEventListener('mousemove', (e) => {
   if (!isDrawing) {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const { x, y } = getCoords(e);
     coords.textContent = `${Math.round(x)}, ${Math.round(y)}`;
     return;
   }
 
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
+  const { x, y } = getCoords(e);
 
   ctx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : colorPicker.value;
   ctx.lineWidth = brushSize.value;
@@ -72,6 +75,61 @@ canvas.addEventListener('mousemove', (e) => {
   lastX = x;
   lastY = y;
 });
+
+canvas.addEventListener('mouseup', () => {
+  isDrawing = false;
+});
+
+canvas.addEventListener('mouseout', () => {
+  isDrawing = false;
+});
+
+canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  if (currentTool === 'fill') {
+    handleFillTouch(e);
+    return;
+  }
+  isDrawing = true;
+  const { x, y } = getCoords(e);
+  lastX = x;
+  lastY = y;
+});
+
+canvas.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  if (!isDrawing) return;
+
+  const { x, y } = getCoords(e);
+
+  ctx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : colorPicker.value;
+  ctx.lineWidth = brushSize.value;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(x, y);
+  ctx.stroke();
+
+  lastX = x;
+  lastY = y;
+});
+
+canvas.addEventListener('touchend', () => {
+  isDrawing = false;
+});
+
+function handleFillTouch(e) {
+  const { x, y } = getCoords(e);
+  const imageData = ctx.getImageData(x, y, 1, 1);
+  const targetColor = imageData.data;
+  const replacementColor = hexToRgb(colorPicker.value);
+
+  if (replacementColor) {
+    floodFill(x, y, targetColor, replacementColor);
+  }
+}
 
 function floodFill(startX, startY, targetColor, replacementColor) {
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
